@@ -11,6 +11,8 @@ add_executable(
     game.cpp
     network.cpp
     board.cpp
+    player.cpp
+    boneyard.cpp
 )
 
 target_link_libraries(

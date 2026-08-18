@@ -43,6 +43,19 @@ public:
             right_ == value;
     }
 
+    constexpr bool operator==(const Tile& other) const
+    {
+        return left_ == other.left_
+            && right_ == other.right_;
+    }
+    
+    constexpr int highest_value() const
+    {
+        return left_ > right_
+            ? left_
+            : right_;
+    }
+
 private:
     int left_;
 

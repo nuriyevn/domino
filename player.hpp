@@ -1,6 +1,7 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
+
 #include <vector>
 #include "tile.hpp"
 
@@ -8,25 +9,18 @@ class Player
 {
 public:
     void addTile(const Tile& tile);
-
-    void removeTile(std::size_t index);
-
+    bool removeTile(const Tile& tile);
     bool empty() const;
 
-    constexpr int points() const
-    {
-        int total = 0;
+    int points() const;
 
-        for (const auto& tile : hand_)
-        {
-            total += tile.points();
-        }
-
-        return total;
-    }
+    const std::vector<Tile>& hand() const;
 
 private:
     std::vector<Tile> hand_;
 };
+
+
+
 
 #endif

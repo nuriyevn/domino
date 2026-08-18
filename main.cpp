@@ -4,6 +4,7 @@
 #include "network.hpp"
 #include <asio.hpp>
 
+// How was the application launched
 enum class Mode
 {
     Host,
@@ -11,28 +12,38 @@ enum class Mode
 };
 
 
+
+
 void run_host()
 {
-    Server server;
+    auto network = std::make_unique<Server>();
 
-    server.start(5000);
+    network->start(5000);
 
-    server.send("Hello from the host!");
+    Game game(
+        std::move(network),
+        PlayerId::Player1);
 
-    std::cout << server.receive() << '\n';
+    game.initialize();
+
+    game.run();
 }
+
 
 void run_client(const std::string& ip)
 {
-    Client client;
+    auto network = std::make_unique<Client>();
 
-    client.connect(ip, 5000);
+    network->connect(ip, 5000);
 
-    std::cout << client.receive() << '\n';
+    Game game(
+        std::move(network),
+        PlayerId::Player2);
 
-    client.send("Hello from the client!");
+    game.initialize();
+
+    game.run();
 }
-
 
 
 int main(int argc, char* argv[])
