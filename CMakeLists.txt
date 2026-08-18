@@ -10,6 +10,7 @@ add_executable(
     main.cpp
     game.cpp
     network.cpp
+    board.cpp
 )
 
 target_link_libraries(
