@@ -4,20 +4,17 @@
 #include "player.hpp"
 #include "boneyard.hpp"
 #include "board.hpp"
+#include "playerid.hpp"
+#include "opening_move.hpp"
 
 class Network;
 
-// Which player inside the game are we talking about
-enum class PlayerId
-{
-    Player1,
-    Player2
-};
+
 
 class Game
 {
 private:
-    PlayerId determine_starting_player() const;
+    OpeningMove determine_opening_move() const;
 
 public:
     explicit Game(std::unique_ptr<Network> network, PlayerId local_player);

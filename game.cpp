@@ -1,6 +1,7 @@
 #include "game.hpp"
 
 #include <iostream>
+#include <cassert>
 
 void Game::initialize()
 {
@@ -8,6 +9,25 @@ void Game::initialize()
     boneyard_.initialize();
 
     deal_tiles();
+
+    OpeningMove opening =
+        determine_opening_move();
+
+    current_turn_ = opening.player;
+    assert(
+        board_.play(
+            Move{
+                opening.tile,
+                Side::Right
+            }));
+
+    assert(
+        get_player(current_turn_)
+            .removeTile(
+                opening.tile));
+
+    next_turn();
+ 
 }
 
 void Game::run()
@@ -74,7 +94,7 @@ void Game::next_turn()
     }
 }
 
-PlayerId Game::determine_starting_player() const
+OpeningMove Game::determine_opening_move() const
 {
     const auto& hand1 = player1_.hand();
 
@@ -116,42 +136,48 @@ PlayerId Game::determine_starting_player() const
 
     if (has_double1 && has_double2)
     {
-        return best1.left() >= best2.left()
-            ? PlayerId::Player1
-            : PlayerId::Player2;
+        if (best1.left() >= best2.left())
+        {
+            return {PlayerId::Player1, best1};
+        }
+
+        return {PlayerId::Player2, best2};
     }
 
     if (has_double1)
     {
-        return PlayerId::Player1;
+        return {PlayerId::Player1, best1};
     }
 
     if (has_double2)
     {
-        return PlayerId::Player2;
+        return {PlayerId::Player2, best2};
     }
 
-    int highest_point_player_1 = 0;
+    Tile highest1 = hand1.front();
 
     for (const auto& tile : hand1)
     {
-        highest_point_player_1 =
-            std::max(
-                highest_point_player_1,
-                tile.points());
+        if (tile.points() > highest1.points())
+        {
+            highest1 = tile;
+        }
     }
 
-    int highest_point_player_2 = 0;
+    Tile highest2 = hand2.front();
 
     for (const auto& tile : hand2)
     {
-        highest_point_player_2 =
-            std::max(
-                highest_point_player_2,
-                tile.points());
+        if (tile.points() > highest2.points())
+        {
+            highest2 = tile;
+        }
     }
 
-    return highest_point_player_1 >= highest_point_player_2
-        ? PlayerId::Player1
-        : PlayerId::Player2;
+    if (highest1.points() >= highest2.points())
+    {
+        return {PlayerId::Player1, highest1};
+    }
+
+    return {PlayerId::Player2, highest2};
 }
