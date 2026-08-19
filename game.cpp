@@ -44,7 +44,6 @@ void Game::run()
 {
      while (running_)
     {
-
         board_.print();
         std::cout << "Player 1 hand:\n";
         player1_.print_hand();
@@ -79,6 +78,13 @@ void Game::run()
 
             if (!player.has_playable_tile(board_))
             {
+                if (is_blocked())
+                {
+                    finish_blocked_round();
+
+                    break;
+                }
+
                 next_turn();
 
                 continue;
@@ -313,4 +319,36 @@ void Game::finish_round(PlayerId winner)
         << '\n';
 
     running_ = false;
+}
+
+
+bool Game::is_blocked() const
+{
+    return boneyard_.empty() &&
+           !player1_.has_playable_tile(board_) &&
+           !player2_.has_playable_tile(board_);
+}
+
+
+void Game::finish_blocked_round()
+{
+    int player1_points =
+        player1_.points();
+
+    int player2_points =
+        player2_.points();
+
+    if (player1_points < player2_points)
+    {
+        finish_round(PlayerId::Player1);
+    }
+    else if (player2_points < player1_points)
+    {
+        finish_round(PlayerId::Player2);
+    }
+    else
+    {
+        std::cout
+            << "The round is tied.\n";
+    }
 }

@@ -29,6 +29,8 @@ public:
 
     Move get_move_from_player(Player& player);
     void finish_round(PlayerId winner);
+    bool is_blocked() const;
+    void finish_blocked_round();
 
 private:
     std::unique_ptr<Network> network_;
