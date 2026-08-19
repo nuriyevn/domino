@@ -2,7 +2,7 @@
 
 #ifndef TILE_HPP
 #define TILE_HPP
-
+#include <ostream>
 class Tile
 {
 public:
@@ -61,4 +61,11 @@ private:
 
     int right_;
 };
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const Tile& tile);
+
+
+    
 #endif

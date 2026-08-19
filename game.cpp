@@ -7,8 +7,18 @@ void Game::initialize()
 {
     std::cout << "Initializing domino game...\n";
     boneyard_.initialize();
+    std::cout << "Boneyard initialized with tiles:\n";
+    boneyard_.print();
 
     deal_tiles();
+    std::cout << "Player 1 hand:\n";
+    player1_.print_hand();
+    std::cout << "Player 2 hand:\n";
+    player2_.print_hand();
+    std::cout.flush();
+
+    std::cout << "Boneyard tiles after dealing:\n";
+    boneyard_.print(); 
 
     OpeningMove opening =
         determine_opening_move();
@@ -32,21 +42,73 @@ void Game::initialize()
 
 void Game::run()
 {
-    while (running_)
+     while (running_)
     {
+
+        board_.print();
+        std::cout << "Player 1 hand:\n";
+        player1_.print_hand();
+        std::cout << "Player 2 hand:\n";
+        player2_.print_hand();
+        std::cout.flush();
         Player& player =
-            get_player(
-                current_turn_);
-        
+            get_player(current_turn_);
+
         if (player.empty())
         {
             running_ = false;
 
-            continue;
+            break;
         }
 
-        std::cout
-            << "Player turn...\n";
+        if (!player.has_playable_tile(board_))
+        {
+            while (!boneyard_.empty() &&
+                   !player.has_playable_tile(board_))
+            {
+                const Tile drawn_tile = boneyard_.draw();
+                player.addTile(drawn_tile);
+
+                std::cout << "Player "
+                          << (current_turn_ ==
+                              PlayerId::Player1
+                                  ? "1"
+                                  : "2")
+                          << " draws " << drawn_tile << " from the boneyard.\n";
+            }
+
+            if (!player.has_playable_tile(board_))
+            {
+                next_turn();
+
+                continue;
+            }
+        }
+
+        Move move = player.find_playable_move(board_);
+        std::cout << "Player "
+                  << (current_turn_ ==
+                      PlayerId::Player1
+                          ? "1"
+                          : "2")
+                  << " plays "
+                  << move.tile
+                  << " on the "
+                  << (move.side ==
+                      Side::Left
+                          ? "left"
+                          : "right")
+                  << ".\n";
+        assert(board_.play(move));
+
+        assert(player.removeTile(move.tile));
+
+        if (player.empty())
+        {
+            finish_round(current_turn_);
+
+            break;
+        }
 
         next_turn();
     }
@@ -56,6 +118,13 @@ Game::Game(std::unique_ptr<Network> network, PlayerId local_player)
     : network_(std::move(network)), local_player_(local_player)
 {
 }
+
+Game::Game(
+    PlayerId local_player)
+    : local_player_(local_player)
+{
+}
+
 
 Player& Game::get_player(PlayerId id)
 {
@@ -180,4 +249,68 @@ OpeningMove Game::determine_opening_move() const
     }
 
     return {PlayerId::Player2, highest2};
+}
+
+Move Game::get_move_from_player(
+    Player& player)
+{
+    while (true)
+    {
+        player.print_hand();
+
+        std::size_t tile_index;
+
+        std::cout
+            << "Choose a tile: ";
+
+        std::cin >> tile_index;
+
+        int side;
+
+        std::cout
+            << "Choose a side "
+            << "(0 = left, 1 = right): ";
+
+        std::cin >> side;
+
+        Move move{
+            player.hand().at(tile_index),
+            side == 0
+                ? Side::Left
+                : Side::Right
+        };
+
+        if (board_.can_place(move))
+        {
+            return move;
+        }
+
+        std::cout
+            << "Illegal move.\n";
+    }
+}
+
+void Game::finish_round(PlayerId winner)
+{
+    PlayerId loser =
+        winner == PlayerId::Player1
+            ? PlayerId::Player2
+            : PlayerId::Player1;
+
+    int score =
+        get_player(loser).points();
+
+    std::cout
+        << "Player "
+        << (winner == PlayerId::Player1
+                ? "1"
+                : "2")
+        << " wins the round!\n";
+
+    std::cout
+        << "Points earned: "
+        << score
+        << '\n';
+
+    running_ = false;
 }

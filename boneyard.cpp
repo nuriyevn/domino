@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <random>
+#include <iostream>
 
 void Boneyard::initialize()
 {
@@ -44,6 +45,18 @@ Tile Boneyard::draw()
     Tile tile = tiles_.back();
 
     tiles_.pop_back();
-
+    
     return tile;
+}
+
+void Boneyard::print() const
+{
+    std::cout << "Boneyard tiles:\n";
+
+    for (const auto& tile : tiles_)
+    {
+        std::cout << tile << " ";
+    }
+
+    std::cout << "\n";
 }

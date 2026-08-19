@@ -8,7 +8,8 @@
 enum class Mode
 {
     Host,
-    Client
+    Client,
+    Local
 };
 
 
@@ -77,6 +78,15 @@ int main(int argc, char* argv[])
         }
 
         run_client(argv[2]);
+    }
+    else if (mode == "local")
+    {
+        Game game(
+            PlayerId::Player1);
+
+        game.initialize();
+
+        game.run();
     }
 
     return 0;

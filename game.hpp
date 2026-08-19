@@ -18,6 +18,7 @@ private:
 
 public:
     explicit Game(std::unique_ptr<Network> network, PlayerId local_player);
+    explicit Game(PlayerId local_player);
 
     void initialize();
 
@@ -25,6 +26,10 @@ public:
     Player& get_player(PlayerId id);
     void deal_tiles();
     void next_turn();
+
+    Move get_move_from_player(Player& player);
+    void finish_round(PlayerId winner);
+
 private:
     std::unique_ptr<Network> network_;
     bool running_ = true;

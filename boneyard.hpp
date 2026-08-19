@@ -12,6 +12,8 @@ public:
     Tile draw();
 
     bool empty() const;
+    
+    void print() const; // TODO for debug only
 
 private:
     std::vector<Tile> tiles_;

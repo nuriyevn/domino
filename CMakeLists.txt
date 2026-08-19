@@ -13,6 +13,7 @@ add_executable(
     board.cpp
     player.cpp
     boneyard.cpp
+    tile.cpp
 )
 
 target_link_libraries(

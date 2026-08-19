@@ -58,3 +58,41 @@ bool Board::play(const Move& move)
 
     return true;
 }
+
+void Board::print() const
+{
+    if (tiles_.empty())
+    {
+        std::cout
+            << "Board: (empty)\n";
+
+        return;
+    }
+
+    std::cout
+        << "Board ("
+        << left_value()
+        << '-'
+        << right_value()
+        << "): ";
+
+    for (const auto& tile : tiles_)
+    {
+        std::cout
+            << tile
+            << ' ';
+    }
+
+    std::cout
+        << '\n';
+}
+
+int Board::left_value() const
+{
+    return tiles_.front().left();
+}
+
+int Board::right_value() const
+{
+    return tiles_.back().right();
+}
