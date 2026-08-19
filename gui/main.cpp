@@ -1,15 +1,11 @@
 #include <QApplication>
-#include <QMainWindow>
+#include "mainwindow.hpp"
 
 int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
-    QMainWindow window;
-
-    window.setWindowTitle("Domino");
-
-    window.resize(1000, 700);
+    MainWindow window;
 
     window.show();
 
