@@ -329,26 +329,41 @@ bool Game::is_blocked() const
            !player2_.has_playable_tile(board_);
 }
 
-
-void Game::finish_blocked_round()
+RoundResult Game::determine_blocked_round_result() const
 {
-    int player1_points =
-        player1_.points();
-
-    int player2_points =
-        player2_.points();
+    int player1_points = player1_.points();
+    int player2_points = player2_.points();
 
     if (player1_points < player2_points)
     {
+        return RoundResult::Player1Won;
+    }
+
+    if (player2_points < player1_points)
+    {
+        return RoundResult::Player2Won;
+    }
+
+    return RoundResult::Tie;
+}
+
+
+
+void Game::finish_blocked_round()
+{
+    switch (determine_blocked_round_result())
+    {
+    case RoundResult::Player1Won:
         finish_round(PlayerId::Player1);
-    }
-    else if (player2_points < player1_points)
-    {
+        break;
+
+    case RoundResult::Player2Won:
         finish_round(PlayerId::Player2);
-    }
-    else
-    {
-        std::cout
-            << "The round is tied.\n";
+        break;
+
+    case RoundResult::Tie:
+        std::cout << "The round is tied.\n";
+        running_ = false;
+        break;
     }
 }

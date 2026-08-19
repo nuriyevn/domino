@@ -9,6 +9,12 @@
 
 class Network;
 
+enum class RoundResult
+{
+    Player1Won,
+    Player2Won,
+    Tie
+};
 
 
 class Game
@@ -31,6 +37,8 @@ public:
     void finish_round(PlayerId winner);
     bool is_blocked() const;
     void finish_blocked_round();
+    
+    RoundResult determine_blocked_round_result() const;
 
 private:
     std::unique_ptr<Network> network_;
