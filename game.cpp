@@ -42,81 +42,9 @@ void Game::initialize()
 
 void Game::run()
 {
-     while (running_)
+    while (running_)
     {
-        board_.print();
-        std::cout << "Player 1 hand:\n";
-        player1_.print_hand();
-        std::cout << "Player 2 hand:\n";
-        player2_.print_hand();
-        std::cout.flush();
-        Player& player =
-            get_player(current_turn_);
-
-        if (player.empty())
-        {
-            running_ = false;
-
-            break;
-        }
-
-        if (!player.has_playable_tile(board_))
-        {
-            while (!boneyard_.empty() &&
-                   !player.has_playable_tile(board_))
-            {
-                const Tile drawn_tile = boneyard_.draw();
-                player.addTile(drawn_tile);
-
-                std::cout << "Player "
-                          << (current_turn_ ==
-                              PlayerId::Player1
-                                  ? "1"
-                                  : "2")
-                          << " draws " << drawn_tile << " from the boneyard.\n";
-            }
-
-            if (!player.has_playable_tile(board_))
-            {
-                if (is_blocked())
-                {
-                    finish_blocked_round();
-
-                    break;
-                }
-
-                next_turn();
-
-                continue;
-            }
-        }
-
-        Move move = player.find_playable_move(board_);
-        std::cout << "Player "
-                  << (current_turn_ ==
-                      PlayerId::Player1
-                          ? "1"
-                          : "2")
-                  << " plays "
-                  << move.tile
-                  << " on the "
-                  << (move.side ==
-                      Side::Left
-                          ? "left"
-                          : "right")
-                  << ".\n";
-        assert(board_.play(move));
-
-        assert(player.removeTile(move.tile));
-
-        if (player.empty())
-        {
-            finish_round(current_turn_);
-
-            break;
-        }
-
-        next_turn();
+        play_turn();
     }
 }
 
@@ -132,7 +60,19 @@ Game::Game(
 }
 
 
-Player& Game::get_player(PlayerId id)
+const Player& Game::get_player(PlayerId id) const
+{
+    if (id == PlayerId::Player1)
+    {
+        return player1_;
+    }
+
+    return player2_;
+}
+
+
+Player& Game::get_player(
+    PlayerId id)
 {
     if (id == PlayerId::Player1)
     {
@@ -366,4 +306,109 @@ void Game::finish_blocked_round()
         running_ = false;
         break;
     }
+}
+
+PlayerId Game::local_player() const
+{
+    return local_player_;
+}
+
+
+const Board& Game::board() const
+{
+    return board_;
+}
+
+void Game::play_turn()
+{
+    board_.print();
+
+    std::cout << "Player 1 hand:\n";
+    player1_.print_hand();
+
+    std::cout << "Player 2 hand:\n";
+    player2_.print_hand();
+
+    std::cout.flush();
+
+    Player& player =
+        get_player(current_turn_);
+
+    if (player.empty())
+    {
+        running_ = false;
+
+        return;
+    }
+
+    if (!player.has_playable_tile(board_))
+    {
+        while (!boneyard_.empty() &&
+               !player.has_playable_tile(board_))
+        {
+            const Tile drawn_tile =
+                boneyard_.draw();
+
+            player.addTile(
+                drawn_tile);
+
+            std::cout << "Player "
+                      << (current_turn_ ==
+                          PlayerId::Player1
+                              ? "1"
+                              : "2")
+                      << " draws "
+                      << drawn_tile
+                      << " from the boneyard.\n";
+        }
+
+        if (!player.has_playable_tile(board_))
+        {
+            if (is_blocked())
+            {
+                finish_blocked_round();
+
+                return;
+            }
+
+            next_turn();
+
+            return;
+        }
+    }
+
+    Move move =
+        player.find_playable_move(
+            board_);
+
+    std::cout << "Player "
+              << (current_turn_ ==
+                  PlayerId::Player1
+                      ? "1"
+                      : "2")
+              << " plays "
+              << move.tile
+              << " on the "
+              << (move.side ==
+                  Side::Left
+                      ? "left"
+                      : "right")
+              << ".\n";
+
+    assert(
+        board_.play(move));
+
+    assert(
+        player.removeTile(
+            move.tile));
+
+    if (player.empty())
+    {
+        finish_round(
+            current_turn_);
+
+        return;
+    }
+
+    next_turn();
 }

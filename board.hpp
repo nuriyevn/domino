@@ -18,6 +18,7 @@ public:
     int left_value() const;
 
     int right_value() const;
+    const std::deque<Tile>& tiles() const;
 
 private:
     std::deque<Tile> tiles_;

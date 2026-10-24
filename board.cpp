@@ -96,3 +96,8 @@ int Board::right_value() const
 {
     return tiles_.back().right();
 }
+
+const std::deque<Tile>& Board::tiles() const
+{
+    return tiles_;
+}

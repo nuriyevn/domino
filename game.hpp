@@ -29,6 +29,7 @@ public:
     void initialize();
 
     void run();
+    const Player& get_player(PlayerId id) const;
     Player& get_player(PlayerId id);
     void deal_tiles();
     void next_turn();
@@ -39,6 +40,9 @@ public:
     void finish_blocked_round();
     
     RoundResult determine_blocked_round_result() const;
+    PlayerId local_player() const;
+    const Board& board() const;
+    void play_turn();
 
 private:
     std::unique_ptr<Network> network_;

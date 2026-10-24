@@ -40,6 +40,13 @@ qt_add_executable(
     domino_gui
     gui/main.cpp
     gui/mainwindow.cpp
+    gui/tilewidget.cpp
+
+    game.cpp
+    board.cpp
+    player.cpp
+    boneyard.cpp
+    tile.cpp
 )
 
 target_link_libraries(
